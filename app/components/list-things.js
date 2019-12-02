@@ -54,7 +54,7 @@ function ThingInList(props) {
   return (
     <>
       <p>{props.thing.name}</p>
-      <button onClick={() => deleteThisThing()} disabled={deleting || deleted}>
+      <button onClick={deleteThisThing} disabled={deleting || deleted}>
         {deleted === false && (
           <>
             {deleting ? '⏳' : '🗑'}

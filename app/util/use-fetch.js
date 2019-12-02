@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 
 const idempotentMethods = new Set(['GET', 'OPTIONS', 'HEAD']);
 
@@ -50,6 +50,24 @@ export default function useFetch(url, fetchOptions = {}, options = {}) {
   }, [url, fetchTrigger])
 
   function doFetch (extraFetchOptions={}) {
+    // It is very nice to write components like this:
+    //  <button onClick={doFetch}>
+    //
+    // But this creates a problem as the react synthetic event is passed in
+    // as the first argument, and that is not what we want.
+    //
+    // One solution is:
+    //  <button onClick={() => doFetch()}>
+    //
+    // But that is a cruel burden, so this function checks if the argument is
+    // a React synthetic event, and short-circuits that argument.
+    //
+    // Also: I would MUCH rather do an actual type-check here:
+    // if (extraFetchOptions instanceof React.SyntheticEvent) {
+    // But I cannot figure out how to import that constructor :(
+    if (extraFetchOptions.hasOwnProperty('nativeEvent')) {
+      extraFetchOptions = {}
+    }
     setExtraFetchOptions(extraFetchOptions);
     setFetchTrigger(count => count + 1);
   }
