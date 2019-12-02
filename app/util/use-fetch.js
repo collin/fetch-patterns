@@ -4,15 +4,18 @@ const idempotentMethods = new Set(['GET', 'OPTIONS', 'HEAD']);
 
 export default function useFetch(url, fetchOptions = {}, options = {}) {
   fetchOptions.method || (fetchOptions.method = 'GET');
-  const shouldFetchImmediately = options.fetchNow === true || idempotentMethods.has(fetchOptions.method);
+  const shouldFetchImmediately =
+    options.fetchNow === true || idempotentMethods.has(fetchOptions.method);
   const [inFlight, setInFlight] = useState(shouldFetchImmediately);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-  const [fetchTrigger, setFetchTrigger] = useState(shouldFetchImmediately ? 1 : 0);
+  const [fetchTrigger, setFetchTrigger] = useState(
+    shouldFetchImmediately ? 1 : 0,
+  );
   const [extraFetchOptions, setExtraFetchOptions] = useState({});
 
   useEffect(() => {
-    if (fetchTrigger === 0) return
+    if (fetchTrigger === 0) return;
 
     const abortController = new AbortController();
     let aborted = false;
@@ -23,16 +26,17 @@ export default function useFetch(url, fetchOptions = {}, options = {}) {
         const request = window.fetch(url, {
           ...fetchOptions,
           ...extraFetchOptions,
-          signal: abortController.signal
+          signal: abortController.signal,
         });
         const response = await request;
         const contentType = response.headers.get('Content-Type');
-        if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
+        let data;
+        if (contentType && contentType.includes('application/json')) {
+          data = await response.json();
           setData(data);
         }
         setInFlight(false);
-        options.afterFetch && options.afterFetch();
+        options.afterFetch && options.afterFetch(data);
       } catch (error) {
         setInFlight(false);
         if (aborted === false) {
@@ -44,12 +48,13 @@ export default function useFetch(url, fetchOptions = {}, options = {}) {
     executeFetch();
 
     return () => {
+      console.log('WAT');
       aborted = true;
       abortController.abort();
-    }
-  }, [url, fetchTrigger])
+    };
+  }, [url, fetchTrigger]);
 
-  function doFetch (extraFetchOptions={}) {
+  function doFetch(extraFetchOptions = {}) {
     // It is very nice to write components like this:
     //  <button onClick={doFetch}>
     //
@@ -66,7 +71,12 @@ export default function useFetch(url, fetchOptions = {}, options = {}) {
     // if (extraFetchOptions instanceof React.SyntheticEvent) {
     // But I cannot figure out how to import that constructor :(
     if (extraFetchOptions.hasOwnProperty('nativeEvent')) {
-      extraFetchOptions = {}
+      extraFetchOptions = {};
+    }
+    if (extraFetchOptions.body && extraFetchOptions.body instanceof Object) {
+      extraFetchOptions.body = JSON.stringify(extraFetchOptions.body);
+      extraFetchOptions.headers || (extraFetchOptions.headers = {});
+      extraFetchOptions.headers['Content-Type'] = 'application/json';
     }
     setExtraFetchOptions(extraFetchOptions);
     setFetchTrigger(count => count + 1);

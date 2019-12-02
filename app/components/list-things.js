@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
+import {Link} from 'react-router-dom';
 import useFetch from '../util/use-fetch';
+import DeleteThingButton from './delete-thing-button';
 
 export default function ListThings(props) {
   const {data: things, inFlight, error, doFetch: refetchList} = useFetch(
@@ -12,6 +14,9 @@ export default function ListThings(props) {
   );
   return (
     <>
+      <nav>
+        <Link to="/new-thing">Make a New Thing</Link>
+      </nav>
       <button
         disabled={seedingInFlight}
         onClick={async () => {
@@ -40,29 +45,11 @@ export default function ListThings(props) {
 }
 
 function ThingInList(props) {
-  const [deleted, setDeleted] = useState(false);
-  const {inFlight: deleting, error, doFetch: deleteThisThing} = useFetch(
-    `/api/things/${props.thing.id}`,
-    {method: 'DELETE'},
-    {
-      afterFetch: () => {
-        setDeleted(true);
-        props.afterDelete && props.afterDelete();
-      },
-    },
-  );
   return (
     <>
-      <p>{props.thing.name}</p>
-      <button onClick={deleteThisThing} disabled={deleting || deleted}>
-        {deleted === false && (
-          <>
-            {deleting ? '⏳' : '🗑'}
-            {error && '🚨 (click to retry)'}
-          </>
-        )}
-        {deleted === true && '⏳'}
-      </button>
+      <Link to={`/thing/${props.thing.id}`}><p>{props.thing.name}</p></Link>
+      <Link to={`/edit-thing/${props.thing.id}`}><p>Edit ✏️</p></Link>
+      <DeleteThingButton thing={props.thing} afterDelete={props.afterDelete}/>
     </>
   );
 }
