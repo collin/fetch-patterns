@@ -1,0 +1,27 @@
+{
+  "name": "fetch-patterns",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon -w server.js server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "parcel-bundler": "^1.12.4",
+    "pg": "^7.14.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-router-dom": "^5.1.2",
+    "sequelize": "^5.21.2",
+    "volleyball": "^1.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.1"
+  },
+  "browserslist": [
+    "last 2 Chrome versions"
+  ]
+}
