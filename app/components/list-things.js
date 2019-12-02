@@ -5,16 +5,20 @@ export default function ListThings(props) {
   const {data: things, inFlight, error, doFetch: refetchList} = useFetch(
     '/api/things',
   );
-  const {inFlight: seedingInFlight, doFetch: reseedDatabase} = useFetch('/api/seed', { method: 'POST' });
+  const {inFlight: seedingInFlight, doFetch: reseedDatabase} = useFetch(
+    '/api/seed',
+    {method: 'POST'},
+    {afterFetch: refetchList},
+  );
   return (
     <>
       <button
         disabled={seedingInFlight}
         onClick={async () => {
-          await reseedDatabase();
-          await refetchList();
+          reseedDatabase();
         }}>
         Re-seed Database
+        {inFlight && '⏳'}
       </button>
       <h1>lookat these things!</h1>
       {inFlight && <p className="info">Loading things...</p>}
@@ -37,20 +41,20 @@ export default function ListThings(props) {
 
 function ThingInList(props) {
   const [deleted, setDeleted] = useState(false);
-  const {inFlight: deleting, error, doFetch} = useFetch(
+  const {inFlight: deleting, error, doFetch: deleteThisThing} = useFetch(
     `/api/things/${props.thing.id}`,
     {method: 'DELETE'},
-    {fetchNow: false},
+    {
+      afterFetch: () => {
+        setDeleted(true);
+        props.afterDelete && props.afterDelete();
+      },
+    },
   );
-  async function deleteThisThing() {
-    await doFetch();
-    setDeleted(true);
-    props.afterDelete && props.afterDelete();
-  }
   return (
     <>
       <p>{props.thing.name}</p>
-      <button onClick={deleteThisThing} disabled={deleting || deleted}>
+      <button onClick={() => deleteThisThing()} disabled={deleting || deleted}>
         {deleted === false && (
           <>
             {deleting ? '⏳' : '🗑'}

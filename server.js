@@ -70,6 +70,7 @@ async function main() {
   await db.sync({force: true});
   await seedDatabase();
   app.listen(4444, () => {
+    process.env.LOG_SQL_STATEMENTS = true;
     console.log('Server is started on port 4444');
   });
 }
