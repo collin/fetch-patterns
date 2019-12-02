@@ -5,7 +5,7 @@ export default function ListThings(props) {
   const {data: things, inFlight, error, doFetch: refetchList} = useFetch(
     '/api/things',
   );
-  const {seedingInFlight, doFetch: reseedDatabase} = useFetch('/api/seed', { method: 'POST' });
+  const {inFlight: seedingInFlight, doFetch: reseedDatabase} = useFetch('/api/seed', { method: 'POST' });
   return (
     <>
       <button
