@@ -19,6 +19,7 @@
     "volleyball": "^1.5.1"
   },
   "devDependencies": {
+    "nice-sequelize-logger": "github:FullstackAcademy/nice-sequelize-logger",
     "nodemon": "^2.0.1"
   },
   "browserslist": [

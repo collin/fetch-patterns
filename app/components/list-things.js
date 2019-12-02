@@ -5,12 +5,23 @@ export default function ListThings(props) {
   const {data: things, inFlight, error, doFetch: refetchList} = useFetch(
     '/api/things',
   );
+  const {seedingInFlight, doFetch: reseedDatabase} = useFetch('/api/seed', { method: 'POST' });
   return (
     <>
+      <button
+        disabled={seedingInFlight}
+        onClick={async () => {
+          await reseedDatabase();
+          await refetchList();
+        }}>
+        Re-seed Database
+      </button>
       <h1>lookat these things!</h1>
       {inFlight && <p className="info">Loading things...</p>}
       {error && <p className="error">Error fetching things: {error.message}</p>}
-      {things && things.length === 0 && <p className="info">There aren't any things</p>}
+      {things && things.length === 0 && (
+        <p className="info">There aren't any things</p>
+      )}
       {things && things.length > 0 && (
         <ul>
           {things.map(thing => (

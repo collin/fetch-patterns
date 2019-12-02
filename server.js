@@ -1,6 +1,9 @@
+const { createNiceSequelizeLoggerConfig } = require("nice-sequelize-logger");
+
+const niceLoggerConfig = createNiceSequelizeLoggerConfig();
 const Sequelize = require('sequelize');
 const db = new Sequelize(`postgres://localhost:5432/things-fetch-patterns`, {
-  logging: false,
+  ...niceLoggerConfig
 });
 
 const Thing = db.define('things', {
@@ -9,6 +12,8 @@ const Thing = db.define('things', {
 
 const express = require('express');
 const app = express();
+const volleyball = require('volleyball');
+app.use(volleyball);
 
 const Bundler = require('parcel-bundler');
 
@@ -17,6 +22,15 @@ const bundler = new Bundler('app/index.html');
 app.get('/api/things', async (req, res, next) => {
   try {
     res.json(await Thing.findAll());
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/seed', async (req, res, next) => {
+  try {
+    await seedDatabase();
+    res.sendStatus(200);
   } catch (error) {
     next(error);
   }
@@ -36,7 +50,7 @@ app.put('/api/things/:id', (req, res, next) => {
 
 app.delete('/api/things/:id', async (req, res, next) => {
   try {
-    await Thing.destroy({where: {id: req.params.id}})
+    await Thing.destroy({where: {id: req.params.id}});
     res.sendStatus(204);
   } catch (error) {
     next(error);
@@ -49,7 +63,7 @@ async function seedDatabase() {
   await Thing.create({name: 'Thing 1'});
   await Thing.create({name: 'Thing 2'});
   await Thing.create({name: 'A Third Thing'});
-  await Thing.create({name: 'There are four things!'});
+  return await Thing.create({name: 'There are four things!'});
 }
 
 async function main() {
