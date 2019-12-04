@@ -1,27 +1,27 @@
 import React from 'react';
 import {Link, useHistory} from 'react-router-dom';
-import useFetch from '../util/use-fetch';
-import useInput from '../util/use-input';
+import useFetch from '../../util/use-fetch';
+import useInput from '../../util/use-input';
 
-export default function CreateThing(props) {
+export default function CreateRecipe(props) {
   const name = useInput({name: 'name', type: 'text'});
   const history = useHistory();
 
-  const {inFlight: saving, error, doFetch: postThing} = useFetch(
-    '/api/things',
+  const {inFlight: saving, error, doFetch: postRecipe} = useFetch(
+    '/api/recipes',
     {
       method: 'POST',
     },
-    {afterFetch: thing => history.push(`/thing/${thing.id}`)},
+    {afterFetch: recipe => history.push(`/recipe/${recipe.id}`)},
   );
-  function createThing(event) {
+  function createRecipe(event) {
     event.preventDefault();
-    postThing({body: {name: name.value}});
+    postRecipe({body: {name: name.value}});
   }
   return (
     <>
       <Link to="/">Back to list</Link>
-      <form onSubmit={createThing}>
+      <form onSubmit={createRecipe}>
         {error && (
           <>
             <p className="error">🚨{error.message}</p>

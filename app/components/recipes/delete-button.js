@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import useFetch from '../util/use-fetch';
+import useFetch from '../../util/use-fetch';
 
-export default function DeleteThingButton(props) {
+export default function DeleteRecipeButton(props) {
   const [deleted, setDeleted] = useState(false);
-  const {inFlight: deleting, error, doFetch: deleteThisThing} = useFetch(
-    `/api/things/${props.thing.id}`,
+  const {inFlight: deleting, error, doFetch: deleteThisRecipe} = useFetch(
+    `/api/recipes/${props.recipe.id}`,
     {method: 'DELETE'},
     {
       afterFetch: () => {
@@ -14,7 +14,7 @@ export default function DeleteThingButton(props) {
     },
   );
   return (
-    <button onClick={deleteThisThing} disabled={deleting || deleted}>
+    <button onClick={deleteThisRecipe} disabled={deleting || deleted}>
       {deleted === false && (
         <>
           {deleting ? '⏳' : '🗑'}

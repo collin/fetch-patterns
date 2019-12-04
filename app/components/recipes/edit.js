@@ -1,46 +1,46 @@
 import React from 'react';
 import {Link, useHistory, useParams} from 'react-router-dom';
-import useFetch from '../util/use-fetch';
-import useInput from '../util/use-input';
+import useFetch from '../../util/use-fetch';
+import useInput from '../../util/use-input';
 
-export default function EditThing(props) {
+export default function EditRecipe(props) {
   const {id} = useParams();
-  const {inFlight, error, data: thing, doFetch: retry} = useFetch(
-    `/api/things/${id}`,
+  const {inFlight, error, data: recipe, doFetch: retry} = useFetch(
+    `/api/recipes/${id}`,
   );
 
   return (
     <>
-      <Link to={`/thing/${id}`}>Back to thing</Link>
+      <Link to={`/recipe/${id}`}>Back to recipe</Link>
       {error && (
         <>
           🚨 Error loading <button retry={retry}>Retry</button>
         </>
       )}
       {inFlight && 'Loading... ⏳'}
-      {thing && <EditThingForm thing={thing}/>}
+      {recipe && <EditRecipeForm recipe={recipe}/>}
     </>
   );
 }
 
-function EditThingForm (props) {
-  const name = useInput({name: 'name', type: 'text', value: props.thing.name});
+function EditRecipeForm (props) {
+  const name = useInput({name: 'name', type: 'text', value: props.recipe.name});
   const history = useHistory();
-  const {inFlight: saving, error, doFetch: putThing} = useFetch(
-    `/api/things/${props.thing.id}`,
+  const {inFlight: saving, error, doFetch: putRecipe} = useFetch(
+    `/api/recipes/${props.recipe.id}`,
     {
       method: 'PUT',
     },
-    {afterFetch: thing => history.push(`/thing/${thing.id}`)},
+    {afterFetch: recipe => history.push(`/recipe/${recipe.id}`)},
   );
-  function updateThing(event) {
+  function updateRecipe(event) {
     event.preventDefault();
-    putThing({body: {name: name.value}});
+    putRecipe({body: {name: name.value}});
   }
   return (
     <>
       <Link to="/">Back to list</Link>
-      <form onSubmit={updateThing}>
+      <form onSubmit={updateRecipe}>
         {error && (
           <>
             <p className="error">🚨{error.message}</p>

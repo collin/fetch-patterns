@@ -48,7 +48,6 @@ export default function useFetch(url, fetchOptions = {}, options = {}) {
     executeFetch();
 
     return () => {
-      console.log('WAT');
       aborted = true;
       abortController.abort();
     };

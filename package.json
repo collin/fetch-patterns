@@ -20,7 +20,8 @@
   },
   "devDependencies": {
     "nice-sequelize-logger": "github:FullstackAcademy/nice-sequelize-logger",
-    "nodemon": "^2.0.1"
+    "node-fetch": "^2.6.0",
+    "nodemon": "^1.19.4"
   },
   "browserslist": [
     "last 2 Chrome versions"
